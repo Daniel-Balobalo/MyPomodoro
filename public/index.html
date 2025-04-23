@@ -1,44 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Timer</title>
+    <title>FocusFlow | Pomodoro Timer</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap">
 </head>
 <body>
     <div class="pomodoro-app">
-        <h1>My Pomodoro Timer</h1>
+        <header class="app-header">
+            <h1>FocusFlow</h1>
+            <button class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="sun-icon">☀️</span>
+                <span class="moon-icon">🌙</span>
+            </button>
+        </header>
 
-        <div class="session-info">
-            <h2 id="session-text">Work Session 1</h2>
+        <div class="timer-container">
+            <div class="session-info">
+                <div class="session-progress" aria-hidden="true"></div>
+                <h2 id="session-text" class="session-title">Work Session 1</h2>
+            </div>
+
+            <div class="timer-display">
+                <span id="minutes">25</span>:<span id="seconds">00</span>
+            </div>
+
+            <div class="controls">
+                <button id="start-btn" class="control-btn primary">
+                    <span class="btn-icon">▶️</span>
+                    <span class="btn-text">Start</span>
+                </button>
+                <button id="pause-btn" class="control-btn secondary">
+                    <span class="btn-icon">⏸️</span>
+                    <span class="btn-text">Pause</span>
+                </button>
+                <button id="reset-btn" class="control-btn tertiary">
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-text">Reset</span>
+                </button>
+            </div>
         </div>
 
-        <div class="timer-display">
-            <span id="minutes">25</span>:<span id="seconds">00</span>
-        </div>
-
-        <div class="controls">
-            <button id="start-btn">Start</button>
-            <button id="pause-btn">Pause</button>
-            <button id="reset-btn">Reset</button>
-        </div>
-
-        <div class="settings">
-            <h2>Timer Settings</h2>
-            <label for="session-count">Sessions:</label>
-            <input id="session-count" type="number" value="4" min="1" max="10">
-            <br>
-            <label for="work-duration">Work Duration (minutes):</label>
-            <input id="work-duration" type="number" value="25" min="1" max="60">
-            <br>
-            <label for="short-break-duration">Short Break (minutes):</label>
-            <input id="short-break-duration" type="number" value="5" min="1" max="15">
-            <br>
-            <label for="long-break-duration">Long Break (minutes):</label>
-            <input id="long-break-duration" type="number" value="15" min="5" max="30">
-            <br>
-            <button id="apply-settings-btn">Apply Settings</button>
+        <div class="settings-container">
+            <button class="settings-toggle" aria-expanded="false" aria-controls="settings-panel">
+                ⚙️ Timer Settings
+            </button>
+            
+            <div id="settings-panel" class="settings-panel" hidden>
+                <div class="setting-group">
+                    <label for="session-count">Sessions</label>
+                    <input id="session-count" type="range" value="4" min="1" max="10" step="1">
+                    <output for="session-count">4</output>
+                </div>
+                
+                <div class="setting-group">
+                    <label for="work-duration">Work (min)</label>
+                    <input id="work-duration" type="range" value="25" min="5" max="60" step="5">
+                    <output for="work-duration">25</output>
+                </div>
+                
+                <div class="setting-group">
+                    <label for="short-break-duration">Short Break (min)</label>
+                    <input id="short-break-duration" type="range" value="5" min="1" max="15" step="1">
+                    <output for="short-break-duration">5</output>
+                </div>
+                
+                <div class="setting-group">
+                    <label for="long-break-duration">Long Break (min)</label>
+                    <input id="long-break-duration" type="range" value="15" min="5" max="30" step="5">
+                    <output for="long-break-duration">15</output>
+                </div>
+                
+                <button id="apply-settings-btn" class="apply-btn">Apply Settings</button>
+            </div>
         </div>
         
         <audio id="alarm-sound" src="assets/sounds/alarm.mp3"></audio>

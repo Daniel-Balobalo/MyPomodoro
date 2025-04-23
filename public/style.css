@@ -1,62 +1,366 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+@layer reset, base, components, utilities;
+
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  button, input {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+  }
+}
+
+@layer base {
+  :root {
+    --font-sans: 'Inter', system-ui, sans-serif;
+    
+    color-scheme: light dark;
+    
+    /* Light theme colors */
+    --surface-1: oklch(99% 0.03 260);
+    --surface-2: oklch(95% 0.05 260);
+    --surface-3: oklch(90% 0.08 260);
+    --text-1: oklch(25% 0.05 260);
+    --text-2: oklch(40% 0.05 260);
+    --primary: oklch(65% 0.25 20);
+    --primary-hover: oklch(60% 0.25 20);
+    --secondary: oklch(65% 0.15 260);
+    --secondary-hover: oklch(60% 0.15 260);
+    --tertiary: oklch(70% 0.1 260);
+    --tertiary-hover: oklch(65% 0.1 260);
+    --accent: oklch(75% 0.2 350);
+    --shadow: 0 4px 20px oklch(0% 0 0 / 0.1);
+    --shadow-sm: 0 2px 8px oklch(0% 0 0 / 0.05);
+  }
+  
+  [data-theme="dark"] {
+    --surface-1: oklch(15% 0.03 260);
+    --surface-2: oklch(20% 0.05 260);
+    --surface-3: oklch(25% 0.08 260);
+    --text-1: oklch(95% 0.02 260);
+    --text-2: oklch(80% 0.02 260);
+    --primary: oklch(65% 0.25 20);
+    --primary-hover: oklch(70% 0.25 20);
+    --secondary: oklch(65% 0.15 260);
+    --secondary-hover: oklch(70% 0.15 260);
+    --tertiary: oklch(70% 0.1 260);
+    --tertiary-hover: oklch(75% 0.1 260);
+    --accent: oklch(75% 0.2 350);
+    --shadow: 0 4px 20px oklch(0% 0 0 / 0.3);
+    --shadow-sm: 0 2px 8px oklch(0% 0 0 / 0.2);
+  }
+  
+  body {
+    font-family: var(--font-sans);
+    background: var(--surface-1);
+    color: var(--text-1);
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    line-height: 1.5;
+    font-weight: 400;
+    transition: background-color 0.3s ease;
+  }
+}
+
+@layer components {
+  .pomodoro-app {
+    container: pomodoro / inline-size;
+    width: min(100%, 480px);
+    background: var(--surface-2);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    display: grid;
+    gap: 2rem;
+    transition: all 0.3s ease;
+    
+    &:has(.settings-panel:not([hidden])) {
+      gap: 1.5rem;
+    }
+  }
+  
+  .app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, var(--primary), var(--accent));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+  }
+  
+  .theme-toggle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--surface-3);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: var(--surface-3);
+      transform: scale(1.1);
+    }
+    
+    .moon-icon {
+      display: none;
+    }
+    
+    [data-theme="dark"] & {
+      .sun-icon {
+        display: none;
+      }
+      
+      .moon-icon {
+        display: block;
+      }
+    }
+  }
+  
+  .timer-container {
+    display: grid;
+    gap: 1.5rem;
+    text-align: center;
+  }
+  
+  .session-info {
+    position: relative;
+    isolation: isolate;
+    
+    .session-progress {
+      position: absolute;
+      inset: 0;
+      background: var(--surface-3);
+      border-radius: 100vw;
+      z-index: -1;
+      scale: 0 1;
+      transform-origin: left;
+      animation: session-progress linear forwards;
+      animation-timeline: --session-progress;
+    }
+    
+    .session-title {
+      font-size: 1.25rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      
+      @container pomodoro (width < 300px) {
+        font-size: 1rem;
+      }
+    }
+  }
+  
+  .timer-display {
+    font-size: 5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    background: var(--surface-3);
+    padding: 1rem;
+    border-radius: 1rem;
+    margin-inline: auto;
+    width: fit-content;
+    
+    @container pomodoro (width < 300px) {
+      font-size: 3.5rem;
+    }
+  }
+  
+  .controls {
     display: flex;
     justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .control-btn {
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    display: flex;
     align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-.pomodoro-app {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.timer-display {
-    font-size: 3em;
-    margin: 20px 0;
-}
-
-.controls button {
-    margin: 5px;
-    padding: 10px 20px;
-    font-size: 1.2em;
+    gap: 0.5rem;
     cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #ff6b6b;
-    color: white;
-}
-
-.controls button:active {
-    background-color: #ff4757;
-}
-
-.settings {
-    margin: 20px 0;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-}
-
-.settings input {
-    margin: 5px 0;
-    padding: 5px;
-    font-size: 1em;
-    width: 60px;
-}
-
-.settings button {
-    margin-top: 10px;
-    padding: 10px 15px;
-    font-size: 1em;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    
+    .btn-icon {
+      font-size: 0.9em;
+    }
+    
+    .btn-text {
+      @container pomodoro (width < 300px) {
+        display: none;
+      }
+    }
+    
+    &.primary {
+      background: var(--primary);
+      color: white;
+      
+      &:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+      }
+    }
+    
+    &.secondary {
+      background: var(--secondary);
+      color: white;
+      
+      &:hover {
+        background: var(--secondary-hover);
+        transform: translateY(-2px);
+      }
+    }
+    
+    &.tertiary {
+      background: var(--tertiary);
+      color: white;
+      
+      &:hover {
+        background: var(--tertiary-hover);
+        transform: translateY(-2px);
+      }
+    }
+  }
+  
+  .settings-container {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .settings-toggle {
+    background: var(--surface-3);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     cursor: pointer;
-    background-color: #ff6b6b;
+    transition: all 0.2s ease;
+    margin-inline: auto;
+    
+    &:hover {
+      background: color-mix(in oklch, var(--surface-3), var(--text-1) 10%);
+    }
+    
+    &[aria-expanded="true"] {
+      background: var(--surface-3);
+    }
+  }
+  
+  .settings-panel {
+    background: var(--surface-3);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    display: grid;
+    gap: 1.5rem;
+    animation: fade-in 0.3s ease forwards;
+    
+    &[hidden] {
+      display: none;
+    }
+  }
+  
+  .setting-group {
+    display: grid;
+    gap: 0.5rem;
+    
+    label {
+      font-size: 0.9rem;
+      color: var(--text-2);
+    }
+    
+    input[type="range"] {
+      -webkit-appearance: none;
+      height: 0.5rem;
+      background: var(--surface-2);
+      border-radius: 0.25rem;
+      outline: none;
+      
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        background: var(--primary);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+    }
+    
+    output {
+      text-align: center;
+      font-weight: 500;
+    }
+  }
+  
+  .apply-btn {
+    background: var(--primary);
     color: white;
-    border: none;
-    border-radius: 5px;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+  }
+  
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes session-progress {
+    from {
+      scale: 0 1;
+    }
+    to {
+      scale: 1 1;
+    }
+  }
+}
+
+@layer utilities {
+  .work-session {
+    --session-color: var(--primary);
+  }
+  
+  .short-break {
+    --session-color: var(--accent);
+  }
+  
+  .long-break {
+    --session-color: var(--secondary);
+  }
 }
